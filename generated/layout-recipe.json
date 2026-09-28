@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "recipe-v1",
+  "id": "brief-brief-composed-a-1790612594467-a",
+  "page": "homepage",
+  "homepageLayout": "brief-composed",
+  "rhythmId": "rhythm-scoreboard-live",
+  "grid": "scoreboard-split",
+  "slots": [
+    {
+      "id": "lead",
+      "kind": "hero",
+      "block": "HeroLead",
+      "span": "full",
+      "limit": 1,
+      "options": {
+        "source": "brief"
+      }
+    },
+    {
+      "id": "latest-rail",
+      "kind": "ranked-rail",
+      "block": "RankedRail",
+      "span": "full",
+      "limit": 5,
+      "options": {}
+    },
+    {
+      "id": "ultimas",
+      "kind": "stream",
+      "block": "HorizontalStream",
+      "limit": 8,
+      "options": {}
+    },
+    {
+      "id": "estados-or-cats",
+      "kind": "discovery-chips",
+      "block": "DiscoveryChips",
+      "limit": 12,
+      "options": {
+        "label": "Estados"
+      }
+    },
+    {
+      "id": "nacional",
+      "kind": "section-pair",
+      "block": "DualSection",
+      "limit": 2,
+      "options": {}
+    },
+    {
+      "id": "ao-vivo-scores",
+      "kind": "scoreboard",
+      "block": "ScoreboardStrip",
+      "limit": 3,
+      "options": {
+        "label": "Ao vivo"
+      }
+    },
+    {
+      "id": "mais-lidas",
+      "kind": "most-read",
+      "block": "MostReadPanel",
+      "limit": 5,
+      "options": {}
+    },
+    {
+      "id": "newsletter",
+      "kind": "newsletter",
+      "block": "NewsletterCard",
+      "options": {}
+    }
+  ]
+}

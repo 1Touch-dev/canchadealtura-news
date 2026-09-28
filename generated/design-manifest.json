@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "designId": "brief-composed-a-1790612594467",
+  "archetype": "brief-composed",
+  "components": [
+    "header",
+    "breakingNews",
+    "featuredCard",
+    "standardCard",
+    "footer"
+  ],
+  "layouts": [
+    "section-led-grid",
+    "media-rich-story",
+    "editorial-results",
+    "brief-composed"
+  ],
+  "compiledAt": "2026-09-28T16:23:23.709Z",
+  "sourceHash": "2c0c7fb9"
+}

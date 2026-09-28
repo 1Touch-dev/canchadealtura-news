@@ -1,0 +1,163 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply min-h-screen bg-background font-body text-foreground antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
+  }
+
+  a {
+    @apply transition-colors;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .animate-ticker {
+    animation: ticker 40s linear infinite;
+  }
+
+  .animate-ticker-paused {
+    animation-play-state: paused;
+  }
+
+  @keyframes ticker {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.06) 0%,
+      rgba(0, 0, 0, 0.12) 50%,
+      rgba(0, 0, 0, 0.06) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.2s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 100% 0;
+    }
+    100% {
+      background-position: -100% 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-ticker,
+    .animate-shimmer {
+      animation: none;
+    }
+  }
+
+  /* Density variants — driven by siteConfig.density on <body> */
+  .density-high main {
+    --section-gap: 1rem;
+  }
+
+  .density-balanced main {
+    --section-gap: 1.5rem;
+  }
+
+  .density-low main {
+    --section-gap: 2.5rem;
+  }
+
+  .density-high .prose {
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  .density-low .prose {
+    font-size: 1.125rem;
+    line-height: 1.85;
+  }
+
+  /* Motion levels — siteConfig.motion on <body> */
+  .motion-none .animate-ticker {
+    animation: none !important;
+  }
+
+  .motion-restrained .motion-enter {
+    transition: opacity 0.2s ease;
+  }
+
+  .motion-moderate .motion-enter,
+  .motion-energetic .motion-enter {
+    animation: fade-up 0.45s ease both;
+  }
+
+  .motion-energetic a:hover {
+    transition: color 0.15s ease, transform 0.15s ease;
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .motion-enter,
+    .motion-energetic a:hover {
+      animation: none !important;
+      transition: none !important;
+    }
+
+    .animate-ping {
+      animation: none !important;
+    }
+  }
+
+  /* Studio archetype accents */
+  [data-layout='broadcast-grid'] {
+    --section-gap: 0.75rem;
+  }
+
+  [data-layout='premium-magazine'] {
+    --section-gap: 2.5rem;
+  }
+
+  [data-layout='premium-magazine'] .prose {
+    font-size: 1.125rem;
+    line-height: 1.85;
+  }
+}
