@@ -32,6 +32,19 @@
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-primary;
   }
+
+  /* Dark canvas: bare inputs inherit light body text onto a white UA field. */
+  input,
+  textarea,
+  select {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-muted-text);
+  }
 }
 
 @layer utilities {
@@ -164,5 +177,65 @@
   [data-layout='premium-magazine'] .prose {
     font-size: 1.125rem;
     line-height: 1.85;
+  }
+
+  /*
+   * --color-secondary is a dark gray (#4E4E4D). On the #121212 canvas it
+   * fails contrast (~2.3:1). Readable ink is --color-text. Light surfaces
+   * (white cards, cream chrome, accent chips) keep dark ink.
+   * Higher-specificity hover utilities (hover:text-primary) still win.
+   */
+  .text-secondary {
+    color: var(--color-text);
+  }
+
+  /* Brand orange #ac4b16 is ~3.4:1 on #121212. Lighter ink on the dark canvas. */
+  .text-primary {
+    color: #f08a45;
+  }
+
+  .bg-white,
+  .bg-\[\#FAFAF8\],
+  .bg-\[\#F4F6F8\] {
+    color: #161616;
+  }
+
+  .bg-white .text-secondary,
+  .bg-white.text-secondary,
+  .bg-white .text-foreground,
+  .bg-white.text-foreground,
+  .bg-\[\#FAFAF8\] .text-secondary,
+  .bg-\[\#FAFAF8\].text-secondary,
+  .bg-\[\#FAFAF8\] .text-foreground,
+  .bg-\[\#F4F6F8\] .text-secondary,
+  .bg-\[\#F4F6F8\].text-secondary,
+  .bg-\[\#F4F6F8\] .text-foreground,
+  .bg-accent,
+  .bg-accent.text-secondary,
+  .bg-accent .text-secondary,
+  .bg-accent.text-white,
+  .bg-accent .text-white {
+    color: #161616;
+  }
+
+  .bg-white .text-muted,
+  .bg-white.text-muted,
+  .bg-\[\#FAFAF8\] .text-muted,
+  .bg-\[\#F4F6F8\] .text-muted {
+    color: #3f3f3f;
+  }
+
+  .bg-white .text-primary,
+  .bg-white.text-primary,
+  .bg-\[\#FAFAF8\] .text-primary,
+  .bg-\[\#F4F6F8\] .text-primary,
+  .bg-accent .text-primary {
+    color: var(--color-primary);
+  }
+
+  .bg-white::placeholder,
+  .bg-\[\#FAFAF8\]::placeholder,
+  .bg-\[\#F4F6F8\]::placeholder {
+    color: #5c5c5c;
   }
 }

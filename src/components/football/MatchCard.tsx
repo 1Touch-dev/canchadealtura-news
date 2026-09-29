@@ -138,10 +138,11 @@ export default function MatchCard({
   const rowBody = (
     <article
       className={cn(
-        'rounded-xl border border-black/[0.08] bg-white px-4 py-3.5 transition-colors duration-150',
-        'hover:border-primary/40',
+        'rounded-xl border px-4 py-3.5 transition-colors duration-150',
         linkable && 'cursor-pointer',
-        live && 'border-primary/30 bg-[#0B3D2E] text-white hover:border-accent/50'
+        live
+          ? 'border-primary/30 bg-[#0B3D2E] text-white hover:border-accent/50'
+          : 'border-black/[0.08] bg-white text-[#161616] hover:border-primary/40'
       )}
     >
       <div className="flex items-center justify-between gap-3 text-[11px] font-semibold uppercase tracking-wide">
