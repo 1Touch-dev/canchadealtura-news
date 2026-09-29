@@ -86,11 +86,13 @@ export function competitionLeagueIds(): number[] {
 /** Map news-nav slugs onto sports routes when live-scores is on. */
 export function navHrefForSlug(slug: string): string {
   if (!isSportsSite()) return `/categoria/${slug}`;
-  if (slug === 'futebol' || slug === 'esportes' || slug === 'partidas') {
+  if (slug === 'esportes') return '/esportes';
+  if (slug === 'futebol' || slug === 'partidas') {
     return '/futebol';
   }
   if (slug === 'ao-vivo') return '/ao-vivo';
   if (slug === 'tabelas') return '/liga/brasileirao';
+  if (slug === 'times' || slug === 'equipes') return '/times';
   const competition = getCompetitionBySlug(slug);
   if (competition) return `/liga/${competition.slug}`;
   return `/categoria/${slug}`;

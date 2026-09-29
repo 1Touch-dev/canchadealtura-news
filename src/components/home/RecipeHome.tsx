@@ -275,12 +275,36 @@ function HeroCoverDuo({ articles }: { articles: Article[] }) {
   );
 }
 
+function SectionTitle({
+  children,
+  href,
+  action = 'Ver mais',
+}: {
+  children: React.ReactNode;
+  href?: string;
+  action?: string;
+}) {
+  return (
+    <div className="mb-4 flex items-end justify-between gap-3 border-b border-primary pb-2">
+      <h2 className="font-display text-lg uppercase tracking-[0.16em] text-foreground md:text-xl">
+        {children}
+      </h2>
+      {href ? (
+        <Link
+          href={href}
+          className="text-[11px] font-bold uppercase tracking-[0.14em] text-accent hover:text-white"
+        >
+          {action}
+        </Link>
+      ) : null}
+    </div>
+  );
+}
+
 function RankedRail({ articles }: { articles: Article[] }) {
   return (
-    <div className="rounded border border-black/10 bg-surface p-3">
-      <h2 className="mb-2 border-b-2 border-primary pb-1 font-display text-lg uppercase tracking-wide text-secondary">
-        Ao vivo
-      </h2>
+    <div className="rounded-xl border border-white/10 bg-surface p-4">
+      <SectionTitle>Destaques</SectionTitle>
       {articles.map((article, i) => (
         <ArticleCard key={article.id} article={article} variant="rail" rank={i + 1} />
       ))}
@@ -292,19 +316,9 @@ function CategoryRail({ articles }: { articles: Article[] }) {
   const primary = siteConfig.navCategories[0];
   return (
     <section>
-      <div className="mb-3 flex items-center justify-between border-b-2 border-primary pb-1">
-        <h2 className="font-display text-xl uppercase tracking-wide text-secondary">
-          {primary?.name || 'Destaques'}
-        </h2>
-        {primary && (
-          <Link
-            href={`/categoria/${primary.slug}`}
-            className="text-xs font-semibold uppercase text-primary hover:underline"
-          >
-            Ver mais
-          </Link>
-        )}
-      </div>
+      <SectionTitle href={primary ? `/categoria/${primary.slug}` : undefined}>
+        {primary?.name || 'Destaques'}
+      </SectionTitle>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {articles.map((article) => (
           <ArticleCard
@@ -321,12 +335,12 @@ function CategoryRail({ articles }: { articles: Article[] }) {
 function HorizontalStream({ articles }: { articles: Article[] }) {
   return (
     <section>
-      <h2 className="mb-3 border-b-2 border-primary pb-1 font-display text-xl uppercase tracking-wide text-secondary">
+      <SectionTitle href="/ultimas" action="Ver todas">
         Últimas
-      </h2>
-      <div className="divide-y divide-black/10 rounded border border-black/10 bg-white">
+      </SectionTitle>
+      <div className="divide-y divide-white/10 rounded-xl border border-white/10 bg-surface px-3">
         {articles.map((article) => (
-          <div key={article.id} className="px-3">
+          <div key={article.id} className="px-1">
             <ArticleCard article={article} variant="horizontal" />
           </div>
         ))}
@@ -396,7 +410,7 @@ function DiscoveryChips() {
         <Link
           key={chip.href}
           href={chip.href}
-          className="rounded-full border border-black/10 bg-surface px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-secondary hover:border-primary hover:text-primary"
+          className="rounded-full border border-white/15 bg-surface px-4 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-foreground hover:border-accent hover:text-accent"
         >
           {chip.name}
         </Link>
@@ -407,10 +421,8 @@ function DiscoveryChips() {
 
 function MostReadPanel({ articles }: { articles: Article[] }) {
   return (
-    <div className="rounded border border-black/10 bg-surface p-4">
-      <h2 className="mb-3 font-display text-lg uppercase tracking-wide text-primary">
-        Mais lidas
-      </h2>
+    <div className="rounded-xl border border-white/10 bg-surface p-4">
+      <SectionTitle>Mais lidas</SectionTitle>
       {articles.map((article, i) => (
         <ArticleCard key={article.id} article={article} variant="rail" rank={i + 1} />
       ))}
@@ -420,14 +432,19 @@ function MostReadPanel({ articles }: { articles: Article[] }) {
 
 function NewsletterCard() {
   return (
-    <div className="rounded bg-secondary p-4 text-white">
-      <p className="text-xs font-bold uppercase tracking-widest text-accent">Newsletter</p>
-      <p className="mt-2 text-sm text-white/80">
-        Receba as principais notícias de {siteConfig.siteName} no seu e-mail.
+    <div className="overflow-hidden rounded-xl border border-primary/50 bg-gradient-to-br from-primary to-[#6a2a0c] p-5 text-white">
+      <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-accent">
+        Newsletter
+      </p>
+      <p className="mt-3 font-display text-2xl uppercase leading-none tracking-wide">
+        O jogo, no seu e-mail
+      </p>
+      <p className="mt-3 text-sm leading-relaxed text-white/80">
+        Receba as principais notícias de {siteConfig.siteName}.
       </p>
       <Link
         href="/contact"
-        className="mt-3 inline-block rounded bg-primary px-4 py-2 text-xs font-bold uppercase"
+        className="mt-5 inline-flex min-h-11 items-center rounded-full bg-accent px-5 text-[11px] font-bold uppercase tracking-[0.14em] text-[#121212]"
       >
         Inscrever-se
       </Link>
@@ -443,16 +460,16 @@ function DualSection({ articles }: { articles: Article[] }) {
   const secondary = siteConfig.navCategories[1];
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <section className="rounded-lg border border-black/10 bg-white p-4">
-        <h2 className="mb-3 font-heading text-sm font-bold uppercase">
+      <section className="rounded-xl border border-white/10 bg-surface p-4">
+        <h2 className="mb-3 font-display text-sm uppercase tracking-[0.16em] text-foreground">
           {primary?.name || 'Destaques'}
         </h2>
         {left.map((a) => (
           <ArticleCard key={a.id} article={a} variant="horizontal" />
         ))}
       </section>
-      <section className="rounded-lg border border-black/10 bg-white p-4">
-        <h2 className="mb-3 font-heading text-sm font-bold uppercase">
+      <section className="rounded-xl border border-white/10 bg-surface p-4">
+        <h2 className="mb-3 font-display text-sm uppercase tracking-[0.16em] text-foreground">
           {secondary?.name || 'Mais'}
         </h2>
         {right.map((a) => (
@@ -580,7 +597,7 @@ function shellClass(recipe: HomepageRecipe): string {
     case 'mosaic-12':
       return 'mx-auto max-w-7xl space-y-6 px-4 py-6';
     case 'scoreboard-split':
-      return 'mx-auto max-w-7xl space-y-4 px-4 py-4';
+      return 'mx-auto max-w-7xl space-y-8 px-4 py-8 md:py-10';
     case 'main-sidebar':
       return 'mx-auto max-w-7xl px-4 py-4';
     default:
@@ -662,15 +679,15 @@ export default function RecipeHome({ articles, mostRead }: RecipeHomeProps) {
     const side = recipe.slots.filter((s) => sidebarKinds.has(s.kind));
     return (
       <div className={shellClass(recipe)}>
-        <div className="grid gap-4 lg:grid-cols-[1fr_300px]">
-          <div className="space-y-4">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="min-w-0 space-y-8">
             {main.map((slot) => (
               <MotionSection key={slot.id}>
                 {renderBlock(slot, articles, mostRead, cursor)}
               </MotionSection>
             ))}
           </div>
-          <aside className="space-y-4">
+          <aside className="space-y-6 lg:sticky lg:top-6 lg:self-start">
             {side.map((slot) => (
               <MotionSection key={slot.id}>
                 {renderBlock(slot, articles, mostRead, cursor)}

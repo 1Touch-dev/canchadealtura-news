@@ -27,6 +27,48 @@ export type MatchCardModel = {
   leagueName?: string;
 };
 
+export type MatchEventRow = {
+  minute: string;
+  type: string;
+  detail?: string;
+  player?: string;
+  assist?: string;
+  teamName?: string;
+};
+
+export type LineupPlayer = {
+  name: string;
+  number?: string;
+  position?: string;
+};
+
+export type MatchLineupSide = {
+  teamName: string;
+  teamLogo?: string;
+  formation?: string;
+  coach?: string;
+  starters: LineupPlayer[];
+};
+
+export type FixtureDetail = MatchCardModel & {
+  referee?: string;
+  events: MatchEventRow[];
+  lineups: MatchLineupSide[];
+};
+
+export function matchDetailPath(fixtureId: string | number): string {
+  return `/partida/${fixtureId}`;
+}
+
+export function teamDetailPath(
+  teamId: string | number,
+  provider: 'football' | 'sportsdb' = 'football'
+): string {
+  return provider === 'football'
+    ? `/time/${teamId}?provider=football`
+    : `/time/${teamId}`;
+}
+
 export type StandingRow = {
   rank: number;
   team: TeamSide;
@@ -314,6 +356,91 @@ export async function fetchHubPayload() {
   return { live, groups };
 }
 
+export type FootballTeamRow = {
+  id: string;
+  name: string;
+  code?: string;
+  country?: string;
+  logo?: string;
+  founded?: number;
+  national?: boolean;
+  leagueId?: number;
+  venue?: string;
+  venueCity?: string;
+};
+
+function mapFootballTeamRow(row: Record<string, unknown>): FootballTeamRow | null {
+  const team = (row.team || row) as {
+    id?: number;
+    name?: string;
+    code?: string;
+    country?: string;
+    logo?: string;
+    founded?: number;
+    national?: boolean;
+  };
+  if (!team?.id || !team?.name) return null;
+  const venue = row.venue as { name?: string; city?: string } | undefined;
+  const league = row.league;
+  return {
+    id: String(team.id),
+    name: team.name,
+    code: team.code,
+    country: team.country,
+    logo: team.logo,
+    founded: team.founded,
+    national: team.national,
+    leagueId: typeof league === 'number' ? league : undefined,
+    venue: venue?.name,
+    venueCity: venue?.city,
+  };
+}
+
+/** League roster via /football/teams?league=&season= */
+export async function fetchTeamsFor(competition: Competition): Promise<FootballTeamRow[]> {
+  const url = footballUrl(integrations().FOOTBALL_TEAMS, {
+    league: competition.leagueId,
+    season: competition.season,
+  });
+  const json = await getJson(url);
+  return unwrapRows(json)
+    .map(mapFootballTeamRow)
+    .filter((t): t is FootballTeamRow => !!t);
+}
+
+/** Lookup by API-Football team id */
+export async function fetchTeamById(teamId: string | number): Promise<FootballTeamRow | null> {
+  const url = footballUrl('/football/teams', { id: teamId });
+  const json = await getJson(url);
+  return unwrapRows(json).map(mapFootballTeamRow).find(Boolean) || null;
+}
+
+/**
+ * Name search fallback when SportsDB proxy secret is unavailable.
+ * Pulls pack league rosters and filters by query.
+ */
+export async function searchFootballTeams(query: string, limit = 24): Promise<FootballTeamRow[]> {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+  const competitions = getCompetitions().filter((c) => c.kind === 'league' || c.kind === 'cup');
+  const batches = await Promise.all(
+    competitions.slice(0, 4).map((c) => fetchTeamsFor(c))
+  );
+  const seen = new Set<string>();
+  const out: FootballTeamRow[] = [];
+  for (const batch of batches) {
+    for (const team of batch) {
+      if (seen.has(team.id)) continue;
+      const hay = `${team.name} ${team.code || ''} ${team.country || ''}`.toLowerCase();
+      if (!hay.includes(q)) continue;
+      seen.add(team.id);
+      out.push(team);
+      if (out.length >= limit) return out;
+    }
+  }
+  return out;
+}
+
 export function toLiveScore(match: MatchCardModel): LiveScore {
   return {
     id: match.id,
@@ -354,4 +481,133 @@ export function formatKickoffTime(iso?: string): string {
   } catch {
     return '';
   }
+}
+
+function mapMatchEvents(row: Record<string, unknown>): MatchEventRow[] {
+  const events = row.events;
+  if (!Array.isArray(events)) return [];
+  return events
+    .map((raw) => {
+      const ev = raw as {
+        time?: { elapsed?: number; extra?: number | null };
+        type?: string;
+        detail?: string;
+        player?: { name?: string };
+        assist?: { name?: string | null };
+        team?: { name?: string };
+      };
+      const elapsed = ev.time?.elapsed;
+      const extra = ev.time?.extra;
+      const minute =
+        elapsed != null
+          ? extra
+            ? `${elapsed}+${extra}'`
+            : `${elapsed}'`
+          : '—';
+      return {
+        minute,
+        type: String(ev.type || ''),
+        detail: ev.detail ? String(ev.detail) : undefined,
+        player: ev.player?.name ? String(ev.player.name) : undefined,
+        assist: ev.assist?.name ? String(ev.assist.name) : undefined,
+        teamName: ev.team?.name ? String(ev.team.name) : undefined,
+      };
+    })
+    .filter((ev) => ev.type || ev.player);
+}
+
+function mapLineups(json: unknown): MatchLineupSide[] {
+  const rows = unwrapRows(json);
+  const out: MatchLineupSide[] = [];
+  for (const row of rows) {
+    const team = row.team as { name?: string; logo?: string } | undefined;
+    const coach = row.coach as { name?: string } | undefined;
+    const startXI = Array.isArray(row.startXI) ? row.startXI : [];
+    const starters: LineupPlayer[] = [];
+    for (const slot of startXI) {
+      const player = (slot as { player?: { name?: string; number?: number; pos?: string } })
+        .player;
+      if (!player?.name) continue;
+      starters.push({
+        name: String(player.name),
+        number: player.number != null ? String(player.number) : undefined,
+        position: player.pos ? String(player.pos) : undefined,
+      });
+    }
+    if (!team?.name && starters.length === 0) continue;
+    out.push({
+      teamName: String(team?.name || 'Time'),
+      teamLogo: team?.logo,
+      formation: row.formation ? String(row.formation) : undefined,
+      coach: coach?.name ? String(coach.name) : undefined,
+      starters,
+    });
+  }
+  return out;
+}
+
+/** API-Football CMS — GET /football/fixtures?id= */
+export async function fetchFixtureById(
+  fixtureId: string | number
+): Promise<FixtureDetail | null> {
+  const url = footballUrl(integrations().FOOTBALL_FIXTURES, { id: fixtureId });
+  const json = await getJson(url);
+  const row = unwrapRows(json)[0];
+  if (!row) return null;
+  const match = mapFixture(row);
+  if (!match) return null;
+  const fixture = row.fixture as { referee?: string } | undefined;
+  let lineups: MatchLineupSide[] = [];
+  if (Array.isArray(row.lineups) && row.lineups.length > 0) {
+    lineups = mapLineups({ response: row.lineups });
+  } else {
+    const lineupsUrl = footballUrl(integrations().FOOTBALL_LINEUPS, {
+      fixture: fixtureId,
+    });
+    lineups = mapLineups(await getJson(lineupsUrl));
+  }
+  return {
+    ...match,
+    referee: fixture?.referee ? String(fixture.referee) : undefined,
+    events: mapMatchEvents(row),
+    lineups,
+  };
+}
+
+export type FootballLeagueRow = {
+  id: number;
+  name: string;
+  logo?: string;
+  country?: string;
+  season?: number;
+  type?: string;
+};
+
+/** API-Football CMS — GET /football/leagues?country= */
+export async function fetchFootballLeagues(
+  country = 'Brazil'
+): Promise<FootballLeagueRow[]> {
+  const url = footballUrl(integrations().FOOTBALL_LEAGUES, { country });
+  const json = await getJson(url);
+  const out: FootballLeagueRow[] = [];
+  for (const row of unwrapRows(json)) {
+    const league = row.league as {
+      id?: number;
+      name?: string;
+      logo?: string;
+      type?: string;
+    };
+    if (!league?.id || !league?.name) continue;
+    const seasons = row.seasons as Array<{ year?: number }> | undefined;
+    const countryNode = row.country as { name?: string } | undefined;
+    out.push({
+      id: league.id,
+      name: league.name,
+      logo: league.logo,
+      country: countryNode?.name,
+      season: seasons?.[0]?.year,
+      type: league.type,
+    });
+  }
+  return out;
 }

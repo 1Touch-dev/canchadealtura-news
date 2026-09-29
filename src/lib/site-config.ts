@@ -152,6 +152,7 @@ export interface SiteConfig {
     FOOTBALL_SCORERS?: string;
     FOOTBALL_TEAMS?: string;
     FOOTBALL_LEAGUES?: string;
+    FOOTBALL_LINEUPS?: string;
     MARKETS?: string;
   };
 }
@@ -162,7 +163,7 @@ export const siteConfig: SiteConfig = {
   description: "Fútbol de primera, análisis de fondo",
   locale: {"language":"pt","dialect":"pt-BR","timezone":"America/Sao_Paulo"},
   cms: {
-    baseUrl: process.env.NEXT_PUBLIC_CMS_URL || 'https://api.football360brazil.com/api',
+    baseUrl: process.env.NEXT_PUBLIC_CMS_URL || 'https://api.labenditaec.com/api',
     websiteKey: "canchadealtura",
     collections: ["feed_brazil","aiarticles"],
   },
@@ -376,11 +377,12 @@ export const siteConfig: SiteConfig = {
   },
   integrations: {
     "FOOTBALL_LIVE": "/football/live",
-    "FOOTBALL_FIXTURES": "/football/fixtures?league=71&season=2026",
-    "FOOTBALL_STANDINGS": "/football/standings?league=71&season=2026",
-    "FOOTBALL_SCORERS": "/football/topscorers?league=71&season=2026",
-    "FOOTBALL_TEAMS": "/football/teams?league=71&season=2026",
+    "FOOTBALL_FIXTURES": "/football/fixtures",
+    "FOOTBALL_STANDINGS": "/football/standings",
+    "FOOTBALL_SCORERS": "/football/topscorers",
+    "FOOTBALL_TEAMS": "/football/teams",
     "FOOTBALL_LEAGUES": "/football/leagues",
+    "FOOTBALL_LINEUPS": "/football/lineups",
     "MARKETS": "TODO_MARKETS_API",
     "ARTICLES_LIST": "/ai-articles?targetWebsite=canchadealtura&page=1&limit=20",
     "ARTICLE_BY_SLUG": "/ai-articles/slug/{slug}",

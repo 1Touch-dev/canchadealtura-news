@@ -1,4 +1,6 @@
+import Link from 'next/link';
 import type { StandingRow } from '@/lib/football-client';
+import { teamDetailPath } from '@/lib/football-client';
 
 export default function StandingsTable({ rows }: { rows: StandingRow[] }) {
   if (rows.length === 0) {
@@ -30,19 +32,38 @@ export default function StandingsTable({ rows }: { rows: StandingRow[] }) {
             >
               <td className="px-3 py-2.5 tabular-nums text-muted">{row.rank}</td>
               <td className="px-3 py-2.5">
-                <span className="inline-flex min-w-0 items-center gap-2">
-                  {row.team.logo ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={row.team.logo}
-                      alt=""
-                      width={22}
-                      height={22}
-                      className="h-[22px] w-[22px] object-contain"
-                    />
-                  ) : null}
-                  <span className="font-semibold text-secondary">{row.team.name}</span>
-                </span>
+                {row.team.id ? (
+                  <Link
+                    href={teamDetailPath(row.team.id, 'football')}
+                    className="inline-flex min-w-0 items-center gap-2 rounded-sm font-semibold text-secondary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  >
+                    {row.team.logo ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={row.team.logo}
+                        alt=""
+                        width={22}
+                        height={22}
+                        className="h-[22px] w-[22px] object-contain"
+                      />
+                    ) : null}
+                    <span className="truncate">{row.team.name}</span>
+                  </Link>
+                ) : (
+                  <span className="inline-flex min-w-0 items-center gap-2">
+                    {row.team.logo ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={row.team.logo}
+                        alt=""
+                        width={22}
+                        height={22}
+                        className="h-[22px] w-[22px] object-contain"
+                      />
+                    ) : null}
+                    <span className="font-semibold text-secondary">{row.team.name}</span>
+                  </span>
+                )}
               </td>
               <td className="px-3 py-2.5 text-right tabular-nums text-muted">
                 {row.played}

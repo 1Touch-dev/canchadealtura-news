@@ -8,44 +8,51 @@ const year = () => new Date().getFullYear();
 
 export function SportsClubhouseFooter() {
   const cfg = resolveChrome().footer;
+  const competitions = isSportsSite()
+    ? getCompetitions()
+    : [{ slug: 'esportes', name: 'Esportes' }];
+
   return (
-    <footer className="mt-auto bg-[#0B3D2E] text-white">
-      <div className="mx-auto max-w-7xl px-4 py-12">
+    <footer className="mt-auto border-t-[3px] border-primary bg-[#090909] text-white">
+      <div className="mx-auto max-w-7xl px-4 py-14">
         <div
           className={cn(
-            'grid gap-10',
-            cfg.columnRhythm === 'asymmetric'
-              ? 'md:grid-cols-[1.4fr_1fr_1fr]'
-              : 'md:grid-cols-3'
+            'grid gap-12',
+            cfg.columnRhythm === 'stacked' ? 'md:grid-cols-1' : 'lg:grid-cols-12'
           )}
         >
-          <div>
-            <p className="font-display text-4xl uppercase tracking-wide">
+          <div className={cfg.columnRhythm === 'stacked' ? '' : 'lg:col-span-5'}>
+            <p
+              className={cn(
+                'font-display uppercase leading-none tracking-[0.1em]',
+                cfg.brandScale === 'small'
+                  ? 'text-2xl'
+                  : cfg.brandScale === 'medium'
+                    ? 'text-3xl'
+                    : 'text-4xl md:text-5xl'
+              )}
+            >
               {siteConfig.siteName}
             </p>
-            <p className="mt-2 max-w-md text-sm text-white/70">
+            <span className="mt-4 block h-1 w-14 bg-accent" />
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/60">
               {siteConfig.tagline || siteConfig.description}
             </p>
             {cfg.showAppPromotion ? (
               <Link
                 href="/ao-vivo"
-                className="mt-4 inline-flex min-h-11 items-center rounded bg-[#E11D48] px-4 text-xs font-bold uppercase"
+                className="mt-6 inline-flex min-h-11 items-center rounded-full bg-primary px-5 text-[11px] font-bold uppercase tracking-[0.16em] text-white hover:bg-primary/90"
               >
                 Ver placar ao vivo
               </Link>
             ) : null}
           </div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-accent">
+          <div className={cfg.columnRhythm === 'stacked' ? '' : 'lg:col-span-2'}>
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-accent">
               Competições
             </p>
-            <ul className="mt-4 space-y-2 text-sm text-white/80">
-              {(isSportsSite()
-                ? getCompetitions()
-                : [
-                    { slug: 'esportes', name: 'Esportes' },
-                  ]
-              ).map((item) => (
+            <ul className="mt-4 space-y-2.5 text-sm text-white/75">
+              {competitions.map((item) => (
                 <li key={item.slug}>
                   <Link
                     href={
@@ -53,7 +60,7 @@ export function SportsClubhouseFooter() {
                         ? `/liga/${item.slug}`
                         : `/categoria/${item.slug}`
                     }
-                    className="hover:text-white"
+                    className="hover:text-accent"
                   >
                     {item.name}
                   </Link>
@@ -61,30 +68,69 @@ export function SportsClubhouseFooter() {
               ))}
             </ul>
           </div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-accent">
-              Clubes & seções
+          <div className={cfg.columnRhythm === 'stacked' ? '' : 'lg:col-span-3'}>
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-accent">
+              Seções
             </p>
-            <ul className="mt-4 space-y-2 text-sm text-white/80">
+            <ul className="mt-4 space-y-2.5 text-sm text-white/75">
               {articleNavCategories().slice(0, 5).map((cat) => (
                 <li key={cat.slug}>
-                  <Link
-                    href={`/categoria/${cat.slug}`}
-                    className="hover:text-white"
-                  >
+                  <Link href={`/categoria/${cat.slug}`} className="hover:text-accent">
                     {cat.name}
                   </Link>
                 </li>
               ))}
             </ul>
-            {cfg.showSocialWall ? (
-              <p className="mt-6 text-xs text-white/50">Siga · compartalhe lances</p>
-            ) : null}
+          </div>
+          <div className={cfg.columnRhythm === 'stacked' ? '' : 'lg:col-span-2'}>
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-accent">
+              Redação
+            </p>
+            <ul className="mt-4 space-y-2.5 text-sm text-white/75">
+              <li>
+                <Link href="/about" className="hover:text-accent">
+                  Sobre
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-accent">
+                  Contato
+                </Link>
+              </li>
+              <li>
+                <Link href="/ultimas" className="hover:text-accent">
+                  Últimas
+                </Link>
+              </li>
+              <li>
+                <Link href="/busca" className="hover:text-accent">
+                  Busca
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
-        <p className="mt-10 border-t border-white/20 pt-6 text-xs text-white/60">
-          © {year()} {siteConfig.siteName}. Todos os direitos reservados.
-        </p>
+        {cfg.showPopularTopics ? (
+          <div className="mt-12 flex flex-wrap gap-2 border-t border-white/10 pt-6">
+            {siteConfig.navCategories.map((cat) => (
+              <Link
+                key={cat.slug}
+                href={`/categoria/${cat.slug}`}
+                className="rounded-full border border-white/15 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/70 hover:border-accent hover:text-accent"
+              >
+                {cat.name}
+              </Link>
+            ))}
+          </div>
+        ) : null}
+        <div className="mt-8 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            © {year()} {siteConfig.siteName}. Todos os direitos reservados.
+          </p>
+          {cfg.showSocialWall ? (
+            <p className="uppercase tracking-[0.16em]">Siga os lances</p>
+          ) : null}
+        </div>
       </div>
     </footer>
   );

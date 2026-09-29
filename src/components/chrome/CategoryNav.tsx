@@ -24,11 +24,11 @@ export default function CategoryNav() {
 
   const linkClass = (active: boolean) =>
     cn(
-      'shrink-0 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
+      'shrink-0 rounded-full px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
       active
         ? 'bg-primary text-white focus-visible:outline-accent'
         : dark
-          ? 'text-white/85 hover:bg-white/10 hover:text-white focus-visible:outline-accent'
+          ? 'text-white/70 hover:bg-white/[0.06] hover:text-accent focus-visible:outline-accent'
           : 'text-secondary hover:bg-primary/10 hover:text-primary focus-visible:outline-primary'
     );
 
@@ -36,11 +36,11 @@ export default function CategoryNav() {
     <nav
       className={cn(
         'border-b',
-        dark ? 'border-white/10 bg-[#0B3D2E]' : 'border-black/10 bg-background'
+        dark ? 'border-white/[0.06] bg-[#141414]' : 'border-black/10 bg-background'
       )}
       aria-label="Categorias"
     >
-      <div className="mx-auto flex max-w-7xl items-center gap-1 overflow-x-auto px-4 py-2 scrollbar-hide">
+      <div className="mx-auto flex max-w-7xl items-center gap-1.5 overflow-x-auto px-4 py-2.5 scrollbar-hide">
         <Link href="/" className={linkClass(pathname === '/')}>
           Início
         </Link>

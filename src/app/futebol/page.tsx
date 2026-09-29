@@ -39,12 +39,26 @@ export default async function FutebolHubPage() {
           <h2 className="font-display text-2xl uppercase tracking-wide text-secondary">
             Ao vivo agora
           </h2>
-          <Link
-            href="/ao-vivo"
-            className="text-xs font-semibold uppercase text-primary hover:underline"
-          >
-            Ver ao vivo
-          </Link>
+          <div className="flex gap-3">
+            <Link
+              href="/times"
+              className="text-xs font-semibold uppercase text-primary hover:underline"
+            >
+              Buscar times
+            </Link>
+            <Link
+              href="/esportes"
+              className="text-xs font-semibold uppercase text-primary hover:underline"
+            >
+              Todos os esportes
+            </Link>
+            <Link
+              href="/ao-vivo"
+              className="text-xs font-semibold uppercase text-primary hover:underline"
+            >
+              Ver ao vivo
+            </Link>
+          </div>
         </div>
         {live.length === 0 ? (
           <p className="rounded-xl border border-black/10 bg-white px-4 py-8 text-sm text-muted">

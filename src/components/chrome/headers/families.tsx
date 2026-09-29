@@ -14,11 +14,23 @@ function LiveScoreChip() {
   return (
     <Link
       href="/ao-vivo"
-      className="inline-flex min-h-11 items-center gap-2 rounded bg-[#E11D48] px-3 text-[10px] font-bold uppercase tracking-wider text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      className="inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-accent/50 bg-accent/10 px-3.5 text-[10px] font-bold uppercase tracking-[0.16em] text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
     >
-      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white motion-reduce:animate-none" />
+      <span className="relative flex h-2 w-2">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-70 motion-reduce:animate-none" />
+        <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
+      </span>
       Ao vivo
     </Link>
+  );
+}
+
+function SearchMark() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="1.75" />
+      <path d="M16 16.5 20 20.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+    </svg>
   );
 }
 
@@ -30,7 +42,7 @@ function EditionDate() {
     year: 'numeric',
   }).format(new Date());
   return (
-    <p className="text-[11px] uppercase tracking-[0.18em] text-muted capitalize">
+    <p className="min-w-0 truncate text-[11px] uppercase tracking-[0.14em] text-white/45 sm:tracking-[0.18em]">
       {label}
     </p>
   );
@@ -65,52 +77,90 @@ export function BroadcastScoreboardHeader() {
     return () => window.removeEventListener('scroll', onScroll);
   }, [chrome.stickyMode]);
 
+  const showSearch = chrome.searchMode !== 'hidden';
+  const monogram = siteConfig.siteName
+    .split(/\s+/)
+    .filter((word) => word.length > 2)
+    .slice(0, 2)
+    .map((word) => word.charAt(0))
+    .join('')
+    .toUpperCase();
+
   return (
     <header
       className={cn(
-        'z-50 border-b border-primary/80 bg-[#0B3D2E] text-white',
-        chrome.stickyMode !== 'none' && 'sticky top-0'
+        'z-50 bg-[#0c0c0c] text-white',
+        chrome.stickyMode !== 'none' && 'sticky top-0',
+        chrome.edgeStyle === 'flat'
+          ? 'shadow-[inset_0_-3px_0_0_var(--color-primary)]'
+          : 'border-b border-white/10'
       )}
     >
+      <div className="border-b border-white/[0.06] bg-black/50">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-1">
+          <EditionDate />
+          {chrome.signatureModule === 'live-score-indicator' ? (
+            <LiveScoreChip />
+          ) : (
+            <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/40">
+              Edição nacional
+            </span>
+          )}
+        </div>
+      </div>
       <div
         className={cn(
           'mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 transition-[padding] duration-200',
-          compressed && chrome.stickyMode === 'compact' ? 'py-1.5' : 'py-2.5'
+          compressed && chrome.stickyMode === 'compact' ? 'py-2' : 'py-3.5'
         )}
       >
-        <Link href="/" className="min-w-0">
-          <p
-            className={cn(
-              'truncate font-display uppercase tracking-[0.06em]',
-              chrome.logoScale === 'compact' ? 'text-xl' : 'text-2xl md:text-3xl',
-              compressed && 'md:text-2xl'
-            )}
+        <Link href="/" className="flex min-w-0 items-center gap-3">
+          <span
+            aria-hidden
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-primary font-display text-sm font-bold tracking-tight text-white"
           >
-            {siteConfig.siteName}
-          </p>
-          {tagline && !compressed ? (
-            <p className="truncate text-[10px] uppercase tracking-[0.2em] text-white/55">
-              {tagline}
-            </p>
-          ) : null}
+            {monogram || 'CA'}
+          </span>
+          <span className="min-w-0">
+            <span
+              className={cn(
+                'block truncate font-display uppercase leading-none tracking-[0.08em]',
+                chrome.logoScale === 'compact' ? 'text-lg' : 'text-xl md:text-[1.65rem]',
+                compressed && 'md:text-xl'
+              )}
+            >
+              {siteConfig.siteName}
+            </span>
+            {tagline && !compressed ? (
+              <span className="mt-1 block truncate text-[11px] tracking-wide text-white/50">
+                {tagline}
+              </span>
+            ) : null}
+          </span>
         </Link>
-        <div className="hidden items-center gap-4 md:flex">
+        <nav className="hidden items-center gap-1 md:flex" aria-label="Atalhos">
           {extra.slice(0, 4).map((l) => (
             <Link
               key={l.href}
               href={l.href}
-              className="min-h-11 inline-flex items-center text-xs font-semibold uppercase tracking-wide hover:text-accent"
+              className="inline-flex min-h-11 items-center rounded-full px-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/75 hover:bg-white/5 hover:text-accent"
             >
               {l.label}
             </Link>
           ))}
-          {chrome.signatureModule === 'live-score-indicator' ? (
-            <LiveScoreChip />
+          {showSearch ? (
+            <Link
+              href="/busca"
+              aria-label="Buscar"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white/80 hover:border-accent hover:text-accent"
+            >
+              <SearchMark />
+            </Link>
           ) : null}
-        </div>
+        </nav>
         <button
           type="button"
-          className="min-h-11 bg-[#E11D48] px-4 text-xs font-bold uppercase md:hidden"
+          className="inline-flex min-h-11 items-center rounded-full border border-white/15 px-4 text-[11px] font-bold uppercase tracking-[0.14em] text-white hover:border-accent hover:text-accent md:hidden"
           aria-expanded={menuOpen}
           aria-controls={menuId}
           onClick={() => setMenuOpen((v) => !v)}
@@ -126,18 +176,25 @@ export function BroadcastScoreboardHeader() {
             animate={{ height: 'auto', opacity: 1 }}
             exit={reduced ? undefined : { height: 0, opacity: 0 }}
             transition={transition(DURATION.base, !!reduced)}
-            className="overflow-hidden border-t border-white/15 px-4 py-3 md:hidden"
+            className="overflow-hidden border-t border-white/10 bg-[#141414] px-4 py-4 md:hidden"
           >
             <ul className="space-y-1 text-sm">
+              {showSearch ? (
+                <li>
+                  <Link href="/busca" className="block rounded-lg px-2 py-2.5 hover:bg-white/5" onClick={() => setMenuOpen(false)}>
+                    Buscar
+                  </Link>
+                </li>
+              ) : null}
               {isSportsSite() ? (
                 <>
                   <li>
-                    <Link href="/ao-vivo" className="block py-2.5" onClick={() => setMenuOpen(false)}>
+                    <Link href="/ao-vivo" className="block rounded-lg px-2 py-2.5 hover:bg-white/5" onClick={() => setMenuOpen(false)}>
                       Ao vivo
                     </Link>
                   </li>
                   <li>
-                    <Link href="/futebol" className="block py-2.5" onClick={() => setMenuOpen(false)}>
+                    <Link href="/futebol" className="block rounded-lg px-2 py-2.5 hover:bg-white/5" onClick={() => setMenuOpen(false)}>
                       Partidas
                     </Link>
                   </li>
@@ -145,7 +202,7 @@ export function BroadcastScoreboardHeader() {
                     <li key={c.slug}>
                       <Link
                         href={`/liga/${c.slug}`}
-                        className="block py-2.5"
+                        className="block rounded-lg px-2 py-2.5 hover:bg-white/5"
                         onClick={() => setMenuOpen(false)}
                       >
                         {c.name}
@@ -156,7 +213,7 @@ export function BroadcastScoreboardHeader() {
               ) : (
                 extra.map((l) => (
                   <li key={l.href}>
-                    <Link href={l.href} className="block py-2.5" onClick={() => setMenuOpen(false)}>
+                    <Link href={l.href} className="block rounded-lg px-2 py-2.5 hover:bg-white/5" onClick={() => setMenuOpen(false)}>
                       {l.label}
                     </Link>
                   </li>
@@ -166,7 +223,7 @@ export function BroadcastScoreboardHeader() {
                 <li key={c.slug}>
                   <Link
                     href={navHrefForSlug(c.slug)}
-                    className="block py-2.5"
+                    className="block rounded-lg px-2 py-2.5 hover:bg-white/5"
                     onClick={() => setMenuOpen(false)}
                   >
                     {c.name}

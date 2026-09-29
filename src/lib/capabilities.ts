@@ -24,6 +24,7 @@ export function capabilityNavLinks(): Array<{ href: string; label: string }> {
   }
   if (hasCapability('live-scores')) {
     links.push({ href: '/futebol', label: 'Partidas' });
+    links.push({ href: '/times', label: 'Times' });
     links.push({ href: '/ao-vivo', label: 'Ao vivo' });
   } else if (hasCapability('live-blog')) {
     links.push({ href: '/ao-vivo/demo-nacional', label: 'Ao vivo' });

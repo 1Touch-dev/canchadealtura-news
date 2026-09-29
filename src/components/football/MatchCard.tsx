@@ -1,12 +1,24 @@
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import type { MatchCardModel, TeamSide } from '@/lib/football-client';
-import { formatKickoff, formatKickoffTime } from '@/lib/football-client';
+import { formatKickoff, formatKickoffTime, matchDetailPath } from '@/lib/football-client';
 
-function Crest({ team, size = 28 }: { team: TeamSide; size?: number }) {
+function Crest({
+  team,
+  size = 28,
+  inverted = false,
+}: {
+  team: TeamSide;
+  size?: number;
+  inverted?: boolean;
+}) {
   if (!team.logo) {
     return (
       <span
-        className="inline-flex shrink-0 items-center justify-center rounded-full bg-black/10 text-[10px] font-bold uppercase text-secondary"
+        className={cn(
+          'inline-flex shrink-0 items-center justify-center rounded-full text-[10px] font-bold uppercase',
+          inverted ? 'bg-white/15 text-white' : 'bg-black/10 text-secondary'
+        )}
         style={{ width: size, height: size }}
         aria-hidden
       >
@@ -60,9 +72,11 @@ function TeamLine({
 export default function MatchCard({
   match,
   variant = 'row',
+  linkable = true,
 }: {
   match: MatchCardModel;
   variant?: 'row' | 'compact';
+  linkable?: boolean;
 }) {
   const live = match.statusKind === 'live';
   const scheduled = match.statusKind === 'scheduled';
@@ -70,8 +84,11 @@ export default function MatchCard({
     ? formatKickoffTime(match.kickoff) || '—'
     : `${match.homeScore} – ${match.awayScore}`;
 
+  const focusRing =
+    'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
+
   if (variant === 'compact') {
-    return (
+    const body = (
       <article className="min-w-[11.5rem] px-4 py-3">
         <p
           className={cn(
@@ -90,13 +107,13 @@ export default function MatchCard({
         </p>
         <div className="mt-2 space-y-1.5">
           <div className="flex items-center gap-2">
-            <Crest team={match.home} size={20} />
+            <Crest team={match.home} size={20} inverted />
             <span className="truncate text-[13px] font-semibold text-white">
               {match.home.name}
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <Crest team={match.away} size={20} />
+            <Crest team={match.away} size={20} inverted />
             <span className="truncate text-[13px] font-semibold text-white">
               {match.away.name}
             </span>
@@ -107,13 +124,23 @@ export default function MatchCard({
         </p>
       </article>
     );
+    if (!linkable) return body;
+    return (
+      <Link
+        href={matchDetailPath(match.id)}
+        className={cn('block transition-opacity hover:opacity-95', focusRing)}
+      >
+        {body}
+      </Link>
+    );
   }
 
-  return (
+  const rowBody = (
     <article
       className={cn(
         'rounded-xl border border-black/[0.08] bg-white px-4 py-3.5 transition-colors duration-150',
         'hover:border-primary/40',
+        linkable && 'cursor-pointer',
         live && 'border-primary/30 bg-[#0B3D2E] text-white hover:border-accent/50'
       )}
     >
@@ -154,5 +181,12 @@ export default function MatchCard({
         </p>
       ) : null}
     </article>
+  );
+
+  if (!linkable) return rowBody;
+  return (
+    <Link href={matchDetailPath(match.id)} className={cn('block', focusRing)}>
+      {rowBody}
+    </Link>
   );
 }

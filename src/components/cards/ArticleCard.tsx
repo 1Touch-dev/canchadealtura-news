@@ -41,7 +41,7 @@ export default function ArticleCard({
     return (
       <article
         className={cn(
-          'group relative overflow-hidden rounded-lg transition-transform duration-200 ease-out will-change-transform hover:-translate-y-0.5 motion-reduce:hover:translate-y-0',
+          'group relative overflow-hidden rounded-2xl transition-transform duration-200 ease-out will-change-transform hover:-translate-y-0.5 motion-reduce:hover:translate-y-0',
           className
         )}
       >
@@ -61,7 +61,7 @@ export default function ArticleCard({
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
-              <span className="inline-block bg-primary px-2 py-0.5 text-[10px] font-bold uppercase text-white">
+              <span className="inline-block rounded-full bg-primary px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white">
                 {article.category}
               </span>
               {article.isVideo && (
@@ -69,7 +69,7 @@ export default function ArticleCard({
                   Vídeo
                 </span>
               )}
-              <h2 className="mt-2 font-heading text-xl font-bold leading-tight text-white md:text-3xl">
+              <h2 className="mt-3 font-display text-2xl font-bold uppercase leading-[1.05] tracking-tight text-white md:text-4xl">
                 {article.title}
               </h2>
               <p className="mt-2 line-clamp-2 text-sm text-white/80">
@@ -89,7 +89,7 @@ export default function ArticleCard({
     return (
       <article
         className={cn(
-          'group flex gap-3 border-b border-black/10 py-3 last:border-0',
+          'group flex gap-3 border-b border-foreground/10 py-3 last:border-0',
           className
         )}
       >
@@ -135,13 +135,13 @@ export default function ArticleCard({
     return (
       <article
         className={cn(
-          'group flex items-start gap-2 border-b border-black/5 py-2 last:border-0',
+          'group flex items-start gap-3 border-b border-foreground/10 py-3 last:border-0',
           className
         )}
       >
         {rank !== undefined && (
-          <span className="mt-0.5 w-5 shrink-0 font-display text-lg text-primary">
-            {rank}
+          <span className="mt-0.5 w-6 shrink-0 font-display text-xl tabular-nums text-primary">
+            {String(rank).padStart(2, '0')}
           </span>
         )}
         <Link href={href} className={cn('min-w-0 flex-1', focusRing)}>
